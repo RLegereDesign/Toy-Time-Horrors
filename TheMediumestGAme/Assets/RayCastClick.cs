@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class RayCastClick : MonoBehaviour
 {
@@ -19,6 +20,10 @@ public class RayCastClick : MonoBehaviour
     public GameObject Dart;
     public GameObject Spawner;
 
+    public TextMeshProUGUI DisplayMe;
+
+
+    private string Object = "";
 
    
     private bool HasBToy = false;
@@ -35,6 +40,8 @@ public class RayCastClick : MonoBehaviour
     void Start()
     {
 
+        DisplayMe.SetText("");
+
 
     }
 
@@ -42,9 +49,29 @@ public class RayCastClick : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetButtonDown("Fire1"))
+        RaycastHit hitInv;
+        if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hitInv, RayDistance) && hitInv.transform.gameObject.tag == "QuestItem")
+        {
+
+            Object = hitInv.transform.gameObject.name;
+            DisplayMe.SetText(Object);
+
+
+
+
+        } else
+        {
+
+            DisplayMe.SetText("");
+
+        }
+
+
+
+
+            if (Input.GetButtonDown("Fire1"))
         { // if left button pressed...
-            Debug.DrawRay(transform.position, Camera.main.transform.forward, Color.red, RayDistance);
+            //Debug.DrawRay(transform.position, Camera.main.transform.forward, Color.red, RayDistance);
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit, RayDistance))
             {
@@ -161,15 +188,18 @@ public class RayCastClick : MonoBehaviour
             }
             else
             {
+                if (HasSlingshot == true)
+                {
 
-                Sling.SetActive(true);
-                drawn = true;
+                    Sling.SetActive(true);
+                    drawn = true;
+                }
             }
 
         }
 
 
-        if (Input.GetButtonDown("Fire1") && HasSlingshot)
+        if (Input.GetButtonDown("Fire1") && HasSlingshot && HasDarts)
         {
             Instantiate(Dart, Spawner.transform.position, gameObject.transform.rotation);
 
