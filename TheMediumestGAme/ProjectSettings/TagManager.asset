@@ -6,6 +6,7 @@ TagManager:
   tags:
   - QuestItem
   - Door
+  - Dart
   layers:
   - Default
   - TransparentFX

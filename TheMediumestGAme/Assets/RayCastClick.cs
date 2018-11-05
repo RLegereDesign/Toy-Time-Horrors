@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class RayCastClick : MonoBehaviour
 {
@@ -8,17 +9,38 @@ public class RayCastClick : MonoBehaviour
 
     public float RayDistance;
     public GameObject QuestMe;
-    private GameObject shitToMove;
-    public float moveHeight;
-    public float moveTime;
-    private bool moveDisShit;
+    public GameObject Springinv1;
+    public GameObject Springinv2;
+    public GameObject ToyPiece;
+    public GameObject ClawToy;
+    public GameObject AfterHalf;
+    public GameObject Darts;
+    public GameObject Slingshot;
+    public GameObject Sling;
+    public GameObject Dart;
+    public GameObject Spawner;
+
+    public TextMeshProUGUI DisplayMe;
 
 
-    private bool HasKey = false;
+    private string Object = "";
+
+   
+    private bool HasBToy = false;
+    private bool HasSpring1 = false;
+    private bool HasSpring2 = false;
+    private bool HasClawToy = false;
+    private bool HasToyPiece = false;
+    private bool HasDarts = false;
+    private bool HasSlingshot = false;
+    [SerializeField]
+    private bool drawn = true;
 
     // Use this for initialization
     void Start()
     {
+
+        DisplayMe.SetText("");
 
 
     }
@@ -27,45 +49,167 @@ public class RayCastClick : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetButtonDown("Fire1"))
+        RaycastHit hitInv;
+        if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hitInv, RayDistance) && hitInv.transform.gameObject.tag == "QuestItem")
+        {
+
+            Object = hitInv.transform.gameObject.name;
+            DisplayMe.SetText(Object);
+
+
+
+
+        } else
+        {
+
+            DisplayMe.SetText("");
+
+        }
+
+
+
+
+            if (Input.GetButtonDown("Fire1"))
         { // if left button pressed...
-            Debug.DrawRay(transform.position, Camera.main.transform.forward, Color.red, RayDistance);
+            //Debug.DrawRay(transform.position, Camera.main.transform.forward, Color.red, RayDistance);
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit, RayDistance))
             {
-                if (hit.transform.gameObject.tag == "QuestItem")
+                switch (hit.transform.gameObject.name)
                 {
-                    Destroy(hit.transform.gameObject);
-                    QuestMe.SetActive(true);
-                    HasKey = true;
+                    case "BrokenToy":
+                        Destroy(hit.transform.gameObject);
+                        QuestMe.SetActive(true);
+                        HasBToy = true;
+
+                        break;
+
+
+
+                    case "Spring1":
+                        Destroy(hit.transform.gameObject);
+                        HasSpring1 = true;
+                        Springinv1.SetActive(true);
+                        
+                        break;
+
+                    case "Spring2":
+                        Destroy(hit.transform.gameObject);
+                        HasSpring2 = true;
+                        Springinv2.SetActive(true);
+
+                        break;
+
+                    case "UpperJaw":
+                        Destroy(hit.transform.gameObject);
+                        HasToyPiece = true;
+                        ToyPiece.SetActive(true);
+
+                        break;
+
+                    case "Dart":
+                        Destroy(hit.transform.parent.gameObject);
+                        HasDarts = true;
+                        Darts.SetActive(true);
+
+                        break;
+
+                    case "SlingShot":
+                        Destroy(hit.transform.parent.gameObject);
+                        HasSlingshot = true;
+                        Slingshot.SetActive(true);
+
+                        break;
+
+
+
+
                 }
 
-                if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit, RayDistance) && HasKey == true && hit.transform.tag == "Door")
+                
+
+
+
+                if (HasBToy && HasSpring1 && HasSpring2 && HasToyPiece)
                 {
-                   
-                   shitToMove = hit.transform.gameObject;
-                    moveDisShit = true;
-                    //StartCoroutine("MoveUp", obj);
+
+                    HasClawToy = true;
+                    HasBToy = false;
+                    QuestMe.SetActive(false);
+                    HasSpring1 = false;
+                    Springinv1.SetActive(false);
+                    HasSpring2 = false;
+                    Springinv2.SetActive(false);
+                    HasToyPiece = false;
+                    ToyPiece.SetActive(false);
+                    ClawToy.SetActive(true);
+
+                }
+
+                if (hit.transform.parent.gameObject.name == "DresserB4" && HasClawToy)
+                {
+                    hit.transform.parent.gameObject.SetActive(false);
+                    AfterHalf.SetActive(true);
 
 
                 }
 
+                
 
-                    Debug.Log(hit.transform.name);
+
+
+
+
+
+
+
+                /* if (hit.transform.gameObject.name == "BrokenToy")
+                 {
+                     Destroy(hit.transform.gameObject);
+                     QuestMe.SetActive(true);
+                    HasBToy = true;
+                 }*/
+
+
+
+
+                Debug.Log(hit.transform.name);
             }
         }
 
-            if (moveDisShit)
+
+        if (Input.GetButtonDown("Draw"))
+        {
+            Debug.Log("FUckEveryone");
+            if (drawn)
             {
-                shitToMove.transform.position = Vector3.Lerp(shitToMove.transform.position, new Vector3(shitToMove.transform.position.x, moveHeight, shitToMove.transform.position.z), ((1 / moveTime) * 100) * Time.deltaTime);
-            if (shitToMove.transform.position.y == moveHeight)
-            {
-                moveDisShit = false;
+                Sling.SetActive(false);
+                drawn = false;
             }
+            else
+            {
+                if (HasSlingshot == true)
+                {
+
+                    Sling.SetActive(true);
+                    drawn = true;
+                }
+            }
+
         }
 
 
-        
+        if (Input.GetButtonDown("Fire1") && HasSlingshot && HasDarts)
+        {
+            Instantiate(Dart, Spawner.transform.position, gameObject.transform.rotation);
+
+
+        }
+
+
+
+
+
 
     }
 
